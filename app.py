@@ -19,6 +19,10 @@ with st.sidebar:
     st.markdown("### Modo")
     modo = st.radio("modo", ["Chat", "Comparar temas"], label_visibility="collapsed", disabled=ocupado)
 
+    with st.expander("Ver todos os candidatos (13)"):
+        for c in candidatos:
+            st.write(f"**{c['nome_urna']}** — {c['partido']}, nº {c['numero']}")
+
 st.title("Eleições 2026 - Propostas de governo")
 
 if modo == "Chat":

@@ -1,0 +1,14 @@
+# Segredos
+.env
+
+# Ambiente virtual (recrie com: pip install -r requirements.txt)
+venv/
+.venv/
+
+# Cache Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Banco vetorial (recrie rodando a ingestão)
+data/vectorstores/

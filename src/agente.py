@@ -8,6 +8,7 @@ from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import StateGraph, END, MessagesState
 from langgraph.prebuilt import ToolNode
+from langchain_core.messages import SystemMessage
 
 load_dotenv()
 
@@ -91,6 +92,15 @@ def buscar_informacoes_web(candidato: str, tema: str) -> str:
 
 ferramentas = [buscar_propostas_candidato, buscar_informacoes_web]
 
+SYSTEM_PROMPT = """Você é um assistente especializado nas propostas de governo dos candidatos \
+à Presidência do Brasil na eleição de 2026, com base em documentos oficiais do TSE.
+
+Responda apenas perguntas relacionadas a este tema: propostas de governo, biografia e \
+trajetória pública dos candidatos, e temas de políticas públicas ligados à eleição.
+
+Se a pergunta não tiver relação com este tema, explique educadamente que este assistente \
+é focado apenas nas propostas dos candidatos à Presidência 2026, sem tentar responder \
+sobre outros assuntos."""
 
 # --- LLM com tools vinculadas ---
 
@@ -127,8 +137,11 @@ grafo = workflow.compile()
 
 def responder(pergunta: str) -> str:
     """Envia uma pergunta ao agente e devolve só o texto da resposta final."""
-    resultado = grafo.invoke({"messages": [("user", pergunta)]})
-    return _extrair_texto(resultado["messages"][-1].content)
+    resultado = grafo.invoke({
+        "messages": [SystemMessage(content=SYSTEM_PROMPT), ("user", pergunta)]
+    })
+    conteudo = resultado["messages"][-1].content
+    return _extrair_texto(conteudo)
 
 def _extrair_texto(conteudo) -> str:
     if isinstance(conteudo, str):
